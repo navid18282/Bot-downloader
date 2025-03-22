@@ -10,31 +10,46 @@ bot = telebot.TeleBot(TOKEN)
 # تنظیم Instaloader
 loader = instaloader.Instaloader()
 
+# ورود به اکانت تستی اینستاگرام (اختیاری، اما توصیه‌شده)
+USERNAME = "your_username"
+PASSWORD = "your_password"
+
+try:
+    loader.login(USERNAME, PASSWORD)
+except Exception as e:
+    print("❌ خطا در ورود به اینستاگرام:", e)
+
+# ایجاد پوشه دانلود اگر وجود نداشته باشد
+if not os.path.exists("downloads"):
+    os.makedirs("downloads")
+
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     bot.reply_to(message, "سلام! لینک پست، ریلز یا نام کاربری برای استوری رو بفرست تا دانلودش کنم.")
 
 @bot.message_handler(func=lambda message: True)
 def download_instagram_content(message):
-    text = message.text
+    text = message.text.strip()
 
     if "instagram.com/p/" in text or "instagram.com/reel/" in text:
-        bot.reply_to(message, "در حال دانلود... لطفاً صبر کنید.")
+        bot.reply_to(message, "🔄 در حال دانلود... لطفاً صبر کنید.")
         try:
             shortcode = text.split("/")[-2]  # استخراج کد پست یا ریلز
             post = instaloader.Post.from_shortcode(loader.context, shortcode)
             loader.download_post(post, target="downloads")
             send_downloaded_files(message.chat.id)
         except Exception as e:
-            bot.reply_to(message, f"خطا در دانلود: {e}")
+            bot.reply_to(message, f"❌ خطا در دانلود: {e}")
+            print("خطا:", e)
 
     elif re.match(r'^[a-zA-Z0-9_.]+$', text):  # بررسی اینکه پیام یک نام کاربری باشد
-        bot.reply_to(message, "در حال دانلود استوری...")
+        bot.reply_to(message, "🔄 در حال دانلود استوری...")
         try:
-            loader.download_story(user=text, filename_target="downloads")
+            loader.download_profiles([text], profile_pic_only=False, fast_update=True, stories=True, target="downloads")
             send_downloaded_files(message.chat.id)
         except Exception as e:
-            bot.reply_to(message, f"خطا در دانلود استوری: {e}")
+            bot.reply_to(message, f"❌ خطا در دانلود استوری: {e}")
+            print("خطا:", e)
 
 def send_downloaded_files(chat_id):
     """ ارسال فایل‌های دانلود شده به کاربر """
@@ -50,5 +65,5 @@ def send_downloaded_files(chat_id):
     os.rmdir("downloads")  # حذف پوشه بعد از ارسال
 
 # اجرای ربات
-print("ربات در حال اجراست...")
+print("✅ ربات در حال اجراست...")
 bot.polling()
