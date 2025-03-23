@@ -7,8 +7,12 @@ import re
 TOKEN = "7813928188:AAEk0_77lpZEzpMZ4VMplo4_gyJK1o10ThI"
 bot = telebot.TeleBot(TOKEN)
 
-# تنظیم Instaloader
+
 loader = instaloader.Instaloader()
+
+
+USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"
+loader.context._default_http_header['User-Agent'] = USER_AGENT
 
 # ورود به اکانت تستی اینستاگرام (اختیاری، اما توصیه‌شده)
 USERNAME = "your_username"
