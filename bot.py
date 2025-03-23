@@ -18,14 +18,15 @@ def run_flask():
 threading.Thread(target=run_flask).start()
 
 # 🔹 توکن رباتت رو اینجا جایگذاری کن
-TOKEN = "7813928188:AAEk0_77lpZEzpMZ4VMplo4_gyJK1o10ThI"
+TOKEN = "8041951584:AAERg3WqvDjl2GFJH4OAQGK01C35IlNxn38"
 bot = telebot.TeleBot(TOKEN)
 
 # 🔹 تنظیم Instaloader
 loader = instaloader.Instaloader()
 
-loader.context._session.headers.update({"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36": USER_AGENT})
-loader.context._default_http_header["Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"] = USER_AGENT  # ✅ اصلاح مقداردهی
+# تعریف USER_AGENT به صورت صحیح
+USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"
+loader.context._session.headers.update({"User-Agent": USER_AGENT})
 
 # 🔹 ورود به اکانت اینستاگرام (اختیاری، اما توصیه‌شده)
 USERNAME = "your_username"
@@ -92,7 +93,8 @@ def send_downloaded_files(chat_id):
         finally:
             os.remove(file_path)  # حذف فایل پس از ارسال
 
-    os.rmdir("downloads")  # حذف پوشه بعد از ارسال
+    if not os.listdir("downloads"):  # حذف پوشه اگر خالی است
+        os.rmdir("downloads")  # حذف پوشه بعد از ارسال
 
 # ✅ اجرای ربات
 print("✅ ربات در حال اجراست...")
