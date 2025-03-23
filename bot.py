@@ -17,25 +17,28 @@ def run_flask():
 
 threading.Thread(target=run_flask).start()
 
-# 🔹 توکن رباتت رو اینجا جایگذاری کن
+# 🔹 توکن ربات تلگرام
 TOKEN = "8041951584:AAERg3WqvDjl2GFJH4OAQGK01C35IlNxn38"
 bot = telebot.TeleBot(TOKEN)
 
-# 🔹 تنظیم Instaloader
+# 🔹 مقداردهی Instaloader
 loader = instaloader.Instaloader()
 
-# تعریف USER_AGENT به صورت صحیح
-USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"
-loader.context._session.headers.update({"User-Agent": USER_AGENT})
-
-# 🔹 ورود به اکانت اینستاگرام (اختیاری، اما توصیه‌شده)
-USERNAME = "your_username"
-PASSWORD = "your_password"
+# 🔹 ورود به حساب اینستاگرام (ذخیره نشست)
+USERNAME = "naavid1386"
+PASSWORD = "n4061748122"
+SESSION_FILE = "session"
 
 try:
-    loader.login(USERNAME, PASSWORD)
+    if os.path.exists(SESSION_FILE):
+        loader.load_session_from_file(USERNAME, SESSION_FILE)
+        print("✅ نشست اینستاگرام بارگذاری شد.")
+    else:
+        loader.login(USERNAME, PASSWORD)
+        loader.save_session_to_file(SESSION_FILE)
+        print("✅ ورود موفقیت‌آمیز به اینستاگرام!")
 except Exception as e:
-    print("❌ خطا در ورود به اینستاگرام:", e)
+    print(f"❌ خطا در ورود: {e}")
 
 # 🔹 ایجاد پوشه دانلود اگر وجود نداشته باشد
 if not os.path.exists("downloads"):
@@ -46,15 +49,15 @@ if not os.path.exists("downloads"):
 def send_welcome(message):
     bot.reply_to(message, "سلام! لینک پست، ریلز یا نام کاربری برای استوری رو بفرست تا دانلودش کنم.")
 
-# ✅ هندل کردن پیام‌ها برای دانلود محتوا
+# ✅ پردازش لینک‌های اینستاگرام
 @bot.message_handler(func=lambda message: True)
 def download_instagram_content(message):
     text = message.text.strip()
 
-    if "instagram.com/p/" in text or "instagram.com/reel/" in text:
+    if "instagram.com/p/" in text or "instagram.com/reel/" in text or "instagram.com/tv/" in text:
         bot.reply_to(message, "🔄 در حال دانلود... لطفاً صبر کنید.")
         try:
-            shortcode = text.split("/")[-2]  # استخراج کد پست یا ریلز
+            shortcode = text.split("/")[-2]
             post = instaloader.Post.from_shortcode(loader.context, shortcode)
             loader.download_post(post, target="downloads")
             send_downloaded_files(message.chat.id)
@@ -62,7 +65,7 @@ def download_instagram_content(message):
             bot.reply_to(message, f"❌ خطا در دانلود: {e}")
             print("خطا:", e)
 
-    elif re.match(r'^[a-zA-Z0-9_.]+$', text):  # بررسی نام کاربری
+    elif re.match(r'^[a-zA-Z0-9_.]+$', text):
         bot.reply_to(message, "🔄 در حال دانلود استوری...")
         try:
             loader.download_profiles([text], profile_pic_only=False, fast_update=True, stories=True, target="downloads")
@@ -93,8 +96,7 @@ def send_downloaded_files(chat_id):
         finally:
             os.remove(file_path)  # حذف فایل پس از ارسال
 
-    if not os.listdir("downloads"):  # حذف پوشه اگر خالی است
-        os.rmdir("downloads")  # حذف پوشه بعد از ارسال
+    os.rmdir("downloads")  # حذف پوشه بعد از ارسال
 
 # ✅ اجرای ربات
 print("✅ ربات در حال اجراست...")
