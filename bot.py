@@ -18,7 +18,7 @@ def run_flask():
 threading.Thread(target=run_flask).start()
 
 # 🔹 توکن رباتت رو اینجا جایگذاری کن
-TOKEN = "توکن_ربات_اینجا"
+TOKEN = "7813928188:AAEk0_77lpZEzpMZ4VMplo4_gyJK1o10ThI"
 bot = telebot.TeleBot(TOKEN)
 
 # 🔹 تنظیم Instaloader
