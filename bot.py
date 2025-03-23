@@ -6,7 +6,7 @@ from flask import Flask
 import threading
 
 # 🔹 راه‌اندازی سرور Flask برای جلوگیری از خاموش شدن در Render
-app = Flask(name)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
