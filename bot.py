@@ -18,7 +18,7 @@ def run_flask():
 threading.Thread(target=run_flask).start()
 
 # 🔹 توکن ربات تلگرام
-TOKEN = "8041951584:AAERg3WqvDjl2GFJH4OAQGK01C35IlNxn38"
+TOKEN = "7627236492:AAGspDDGfS5MMIHnjdjNscu27rl0Ik9DNh0"
 bot = telebot.TeleBot(TOKEN)
 
 # 🔹 مقداردهی Instaloader
